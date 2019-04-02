@@ -44,7 +44,13 @@ class MapParams(object):
 
     # Обновление параметров карты по нажатой клавише.
     def update(self, event):
-        pass
+        if event.key == pygame.K_PAGEUP:
+            if self.zoom >= 0 and self.zoom <= 19:
+                self.zoom += 1
+        if event.key == pygame.K_PAGEDOWN:
+            if self.zoom >= 0 and self.zoom <= 19:
+                self.zoom -= 1
+        print(self.zoom)
 
     # Преобразование экранных координат в географические.
     def screen_to_geo(self, pos):
@@ -58,14 +64,9 @@ class MapParams(object):
 
 
 # Создание карты с соответствующими параметрами.
-def load_map(ll_spn=None, ll=str(lat)+','+str(lon), z=zoom, map_type="map", add_params=None):
-    if ll_spn:
-        map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&z={z}&l={map_type}".format(**locals())
-    else:
-        map_request = "http://static-maps.yandex.ru/1.x/?l={map_type}".format(**locals())
+def load_map(mp):
+    map_request = "http://static-maps.yandex.ru/1.x/?ll={}&z={}&l={}".format(mp.ll(), mp.zoom, mp.type)
 
-    if add_params:
-        map_request += "&" + add_params
     response = requests.get(map_request)
 
     if not response:
@@ -96,10 +97,11 @@ def main():
     mp = MapParams()
 
     while True:
+        mp = MapParams()
         event = pygame.event.wait()
         if event.type == pygame.QUIT:  # Выход из программы
             break
-        elif event.type == pygame.KEYUP:  # Обрабатываем различные нажатые клавиши.
+        elif event.type == pygame.KEYDOWN:  # Обрабатываем различные нажатые клавиши.
             mp.update(event)
         # другие eventы
 
